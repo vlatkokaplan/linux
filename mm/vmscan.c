@@ -2923,7 +2923,17 @@ loop_again:
 				continue;
 			}
 
-			if (zone_balanced(zone, testorder, 0, end_zone)) {
+			if (!zone_balanced(zone, testorder, 0, end_zone)) {
+				all_zones_ok = 0;
+				/*
+				 * We are still under min water mark.  This
+				 * means that we have a GFP_ATOMIC allocation
+				 * failure risk. Hurry up!
+				 */
+				if (!zone_watermark_ok_safe(zone, order,
+					    min_wmark_pages(zone), end_zone, 0))
+					has_under_min_watermark_zone = 1;
+			} else {
 				/*
 				 * If a zone reaches its high watermark,
 				 * consider it to be no longer congested. It's
