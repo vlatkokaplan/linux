@@ -3,6 +3,8 @@
 always  := resumes.code
 targets := resumes.elf
 
+hostprogs-y	:= mksunxichecksum
+
 #use "-Os" flags.
 #Don't use "-O2" flags.
 KBUILD_CFLAGS := -g -c -nostdlib -march=armv7-a -marm -fno-unwind-tables -fno-asynchronous-unwind-tables -mlittle-endian -O2
@@ -22,8 +24,8 @@ resumes-y :=   resumes.o        \
 
 resumes-y := $(addprefix $(obj)/,$(resumes-y))
 
-$(obj)/resumes.code: $(src)/gen_check_code $(obj)/resumes.bin
-	$(Q)$< $(obj)/resumes.bin $(obj)/resumes.code
+$(obj)/resumes.code: $(obj)/resumes.bin $(obj)/mksunxichecksum
+	$(obj)/mksunxichecksum $(obj)/resumes.bin $(obj)/resumes.code
 
 $(obj)/resumes.bin: $(obj)/resumes.elf FORCE
 	$(Q)$(CROSS_COMPILE)objcopy -O binary $(obj)/resumes.elf $(obj)/resumes.bin
