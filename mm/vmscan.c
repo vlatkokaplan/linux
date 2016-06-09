@@ -2782,6 +2782,7 @@ loop_again:
 
 	for (priority = DEF_PRIORITY; priority >= 0; priority--) {
 		unsigned long lru_pages = 0;
+		int has_under_min_watermark_zone = 0;
 
 		/* The swap token gets in the way of swapout... */
 		if (!priority)
@@ -2949,6 +2950,17 @@ loop_again:
 		}
 		if (all_zones_ok || (order && pgdat_balanced(pgdat, balanced, *classzone_idx)))
 			break;		/* kswapd: all done */
+		/*
+		 * OK, kswapd is getting into trouble.  Take a nap, then take
+		 * another pass across the zones.
+		 */
+		if (total_scanned && (priority < DEF_PRIORITY - 2)) {
+			if (has_under_min_watermark_zone)
+				count_vm_event(KSWAPD_SKIP_CONGESTION_WAIT);
+			else
+				congestion_wait(BLK_RW_ASYNC, HZ/10);
+		}
+
 		/*
 		 * We do this so kswapd doesn't build up large priorities for
 		 * example when it is freeing in parallel with allocators. It
