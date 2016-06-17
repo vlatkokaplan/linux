@@ -193,11 +193,8 @@ static int sunxi_pcm_hw_params(struct snd_pcm_substream *substream,
 	struct sunxi_dma_params *dmap;
 	struct dma_slave_config slave_config;
 	int ret;
-#ifdef CONFIG_SND_SUNXI_SOC_SUPPORT_AUDIO_RAW
-	raw_flag = params_raw(params);
-#else
+
 	raw_flag = hdmi_format;
-#endif
 	dmap = snd_soc_dai_get_dma_data(rtd->cpu_dai, substream);
 
 	ret = snd_hwparams_to_dma_slave_config(substream, params,
@@ -435,7 +432,7 @@ static struct snd_pcm_ops sunxi_pcm_ops = {
 	.hw_free		= sunxi_pcm_hw_free,
 	.trigger		= sunxi_pcm_trigger,
 
-//	#if defined CONFIG_SND_SUNXI_SOC_SUPPORT_AUDIO_RAW || defined AUDIO_KARAOKE
+//	#if defined AUDIO_KARAOKE
 	.pointer		= snd_dmaengine_pcm_pointer_no_residue,
 //	#else
 //	.pointer		= snd_dmaengine_pcm_pointer,

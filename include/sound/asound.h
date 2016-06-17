@@ -336,13 +336,8 @@ typedef int snd_pcm_hw_param_t;
 #define	SNDRV_PCM_HW_PARAM_BUFFER_SIZE	17	/* Size of buffer in frames */
 #define	SNDRV_PCM_HW_PARAM_BUFFER_BYTES	18	/* Size of buffer in bytes */
 #define	SNDRV_PCM_HW_PARAM_TICK_TIME	19	/* Approx tick duration in us */
-#ifdef CONFIG_SND_SUNXI_SOC_SUPPORT_AUDIO_RAW
-#define SNDRV_PCM_HW_PARAM_RAW_FLAG	 20
-#define	SNDRV_PCM_HW_PARAM_LAST_INTERVAL	SNDRV_PCM_HW_PARAM_RAW_FLAG
-#else
-#define	SNDRV_PCM_HW_PARAM_LAST_INTERVAL	SNDRV_PCM_HW_PARAM_TICK_TIME
-#endif
 #define	SNDRV_PCM_HW_PARAM_FIRST_INTERVAL	SNDRV_PCM_HW_PARAM_SAMPLE_BITS
+#define	SNDRV_PCM_HW_PARAM_LAST_INTERVAL	SNDRV_PCM_HW_PARAM_TICK_TIME
 
 
 #define SNDRV_PCM_HW_PARAMS_NORESAMPLE	(1<<0)	/* avoid rate resampling */
@@ -378,9 +373,6 @@ struct snd_pcm_hw_params {
 	unsigned int rate_num;		/* R: rate numerator */
 	unsigned int rate_den;		/* R: rate denominator */
 	snd_pcm_uframes_t fifo_size;	/* R: chip FIFO size in frames */
-	#ifdef CONFIG_SND_SUNXI_SOC_SUPPORT_AUDIO_RAW
-	unsigned int raw_flag;
-	#endif
 	unsigned char reserved[64];	/* reserved for future */
 };
 

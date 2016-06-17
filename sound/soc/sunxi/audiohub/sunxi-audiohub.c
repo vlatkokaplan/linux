@@ -116,11 +116,8 @@ static int sunxi_audiohub_hw_params(struct snd_pcm_substream *substream,
 		#endif
 		hdmi_para.sample_rate = params_rate(params);
 		hdmi_para.channel_num = params_channels(params);
-		#ifdef CONFIG_SND_SUNXI_SOC_SUPPORT_AUDIO_RAW
-			hdmi_para.data_raw = params_raw(params);
-		#else
-			hdmi_para.data_raw = 1;
-		#endif
+		//FIXME: add proper IEC958 handling
+		hdmi_para.data_raw = 1;
 		switch (params_format(params))
 		{
 			case SNDRV_PCM_FORMAT_S16_LE:

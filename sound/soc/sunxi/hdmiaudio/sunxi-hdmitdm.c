@@ -509,12 +509,8 @@ static int sunxi_daudio_hw_params(struct snd_pcm_substream *substream,
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct sunxi_dma_params *dma_data;
-
-#ifdef CONFIG_SND_SUNXI_SOC_SUPPORT_AUDIO_RAW
-	int raw_flag = params_raw(params);
-#else
 	int raw_flag = hdmi_format;
-#endif
+
 	switch (params_format(params))
 	{
 		case SNDRV_PCM_FORMAT_S16_LE:
