@@ -22,28 +22,7 @@
 #ifndef RTL28XXU_H
 #define RTL28XXU_H
 
-#define DVB_USB_LOG_PREFIX "rtl28xxu"
-#include "dvb-usb.h"
-
-#define deb_info(args...) dprintk(dvb_usb_rtl28xxu_debug, 0x01, args)
-#define deb_rc(args...)   dprintk(dvb_usb_rtl28xxu_debug, 0x02, args)
-#define deb_xfer(args...) dprintk(dvb_usb_rtl28xxu_debug, 0x04, args)
-#define deb_reg(args...)  dprintk(dvb_usb_rtl28xxu_debug, 0x08, args)
-#define deb_i2c(args...)  dprintk(dvb_usb_rtl28xxu_debug, 0x10, args)
-#define deb_fw(args...)   dprintk(dvb_usb_rtl28xxu_debug, 0x20, args)
-
-#define deb_dump(r, t, v, i, b, l, func) { \
-	int loop_; \
-	func("%02x %02x %02x %02x %02x %02x %02x %02x", \
-		t, r, v & 0xff, v >> 8, i & 0xff, i >> 8, l & 0xff, l >> 8); \
-	if (t == (USB_TYPE_VENDOR | USB_DIR_OUT)) \
-		func(" >>> "); \
-	else \
-		func(" <<< "); \
-	for (loop_ = 0; loop_ < l; loop_++) \
-		func("%02x ", b[loop_]); \
-	func("\n");\
-}
+#include "dvb_usb.h"
 
 /*
  * USB commands
@@ -74,8 +53,17 @@
 struct rtl28xxu_priv {
 	u8 chip_id;
 	u8 tuner;
+	char *tuner_name;
 	u8 page; /* integrated demod active register page */
+	struct i2c_adapter *demod_i2c_adapter;
 	bool rc_active;
+	struct i2c_client *i2c_client_tuner;
+	struct i2c_client *i2c_client_slave_demod;
+	int (*init) (struct dvb_frontend *fe);
+	#define SLAVE_DEMOD_NONE           0
+	#define SLAVE_DEMOD_MN88472        1
+	#define SLAVE_DEMOD_MN88473        2
+	unsigned int slave_demod:3;
 };
 
 enum rtl28xxu_chip_id {
@@ -84,14 +72,15 @@ enum rtl28xxu_chip_id {
 	CHIP_ID_RTL2832U,
 };
 
+/* XXX: Hack. This must be keep sync with rtl2832 demod driver. */
 enum rtl28xxu_tuner {
 	TUNER_NONE,
 
-	TUNER_RTL2830_QT1010,
+	TUNER_RTL2830_QT1010          = 0x10,
 	TUNER_RTL2830_MT2060,
 	TUNER_RTL2830_MXL5005S,
 
-	TUNER_RTL2832_MT2266,
+	TUNER_RTL2832_MT2266          = 0x20,
 	TUNER_RTL2832_FC2580,
 	TUNER_RTL2832_MT2063,
 	TUNER_RTL2832_MAX3543,
@@ -101,6 +90,8 @@ enum rtl28xxu_tuner {
 	TUNER_RTL2832_E4000,
 	TUNER_RTL2832_TDA18272,
 	TUNER_RTL2832_FC0013,
+	TUNER_RTL2832_R820T,
+	TUNER_RTL2832_R828D,
 };
 
 struct rtl28xxu_req {
@@ -113,6 +104,12 @@ struct rtl28xxu_req {
 struct rtl28xxu_reg_val {
 	u16 reg;
 	u8 val;
+};
+
+struct rtl28xxu_reg_val_mask {
+	u16 reg;
+	u8 val;
+	u8 mask;
 };
 
 /*
