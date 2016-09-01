@@ -768,6 +768,7 @@ enum rtl28xxu_usb_table_entry {
 	RTL2831U_0BDA_2831,
 	RTL2831U_14AA_0160,
 	RTL2831U_14AA_0161,
+	RTL2831U_15f4_0131,
 };
 
 static struct usb_device_id rtl28xxu_table[] = {
@@ -778,7 +779,8 @@ static struct usb_device_id rtl28xxu_table[] = {
 		USB_DEVICE(USB_VID_WIDEVIEW, USB_PID_FREECOM_DVBT)},
 	[RTL2831U_14AA_0161] = {
 		USB_DEVICE(USB_VID_WIDEVIEW, USB_PID_FREECOM_DVBT_2)},
-
+	[RTL2831U_15f4_0131] = {
+		USB_DEVICE(USB_VID_HANFTEK, USB_PID_HANFTEK)},
 	/* RTL2832U */
 	{} /* terminating entry */
 };
